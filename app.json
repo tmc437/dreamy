@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "dreamy",
+    "name": "Dreamy",
     "slug": "dreamy",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,16 +11,38 @@
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#8B5CF6"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dreamy.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Dreamy needs access to your microphone to record voice descriptions of your dreams.",
+        "NSCameraUsageDescription": "Dreamy needs camera access to take photos for your dream journal.",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "dreamy"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#8B5CF6"
       },
+      "package": "com.dreamy.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
@@ -34,6 +56,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-eas-project-id"
+      }
     }
   }
 }
