@@ -1,19 +1,24 @@
 {
   "cli": {
-    "version": ">= 5.0.0"
+    "version": ">= 5.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "node": "22.11.0",
       "ios": {
-        "resourceClass": "default"
+        "resourceClass": "default",
+        "image": "latest"
       }
     },
     "preview": {
       "distribution": "internal",
+      "node": "22.11.0",
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "image": "latest"
       }
     },
     "production": {
@@ -21,8 +26,10 @@
       "cache": {
         "key": "production"
       },
+      "node": "22.11.0",
       "ios": {
-        "resourceClass": "default"
+        "resourceClass": "default",
+        "image": "latest"
       },
       "android": {
         "buildType": "apk"
@@ -45,4 +52,3 @@
     }
   }
 }
-

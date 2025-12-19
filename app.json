@@ -18,7 +18,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dreamy.app",
+      "bundleIdentifier": "com.tmccann-dreamy.app",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Dreamy needs access to your microphone to record voice descriptions of your dreams.",
         "NSCameraUsageDescription": "Dreamy needs camera access to take photos for your dream journal.",
@@ -27,8 +27,14 @@
             "CFBundleURLSchemes": [
               "dreamy"
             ]
+          },
+          {
+            "CFBundleURLSchemes": [
+              "dreamy"
+            ]
           }
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -51,7 +57,10 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [],
+    "plugins": [
+      "@react-native-community/datetimepicker",
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": true
     },
