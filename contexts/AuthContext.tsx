@@ -180,11 +180,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           console.log('  Browser result:', result.type);
 
-          if (result.type === 'success') {
+          if (result.type === 'success' && result.url) {
             console.log('✅ OAuth completed successfully');
+            console.log('  Callback URL received:', result.url.substring(0, 50) + '...');
+            
+            // Extract the auth parameters from the callback URL
+            // Supabase returns either access_token (implicit) or code (PKCE)
+            const url = result.url;
+            
+            if (url.includes('access_token=') || url.includes('refresh_token=')) {
+              // Handle implicit grant flow - extract tokens from URL fragment
+              console.log('📝 Processing tokens from URL fragment...');
+              
+              // Parse the fragment (after #) or query string (after ?)
+              const hashParams = url.includes('#') 
+                ? new URLSearchParams(url.split('#')[1])
+                : new URLSearchParams(url.split('?')[1]);
+              
+              const accessToken = hashParams.get('access_token');
+              const refreshToken = hashParams.get('refresh_token');
+              
+              if (accessToken) {
+                console.log('🔑 Setting session with tokens...');
+                const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+                  access_token: accessToken,
+                  refresh_token: refreshToken || '',
+                });
+                
+                if (sessionError) {
+                  console.error('❌ Error setting session:', sessionError);
+                  throw sessionError;
+                }
+                
+                if (sessionData?.session) {
+                  console.log('✅ Session established successfully!');
+                  console.log('  User ID:', sessionData.session.user.id);
+                  console.log('  Email:', sessionData.session.user.email);
+                }
+              }
+            } else if (url.includes('code=')) {
+              // Handle PKCE flow - exchange code for session
+              console.log('📝 Exchanging authorization code for session...');
+              
+              const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(url);
+              
+              if (sessionError) {
+                console.error('❌ Error exchanging code:', sessionError);
+                throw sessionError;
+              }
+              
+              if (sessionData?.session) {
+                console.log('✅ Session established successfully!');
+                console.log('  User ID:', sessionData.session.user.id);
+                console.log('  Email:', sessionData.session.user.email);
+              }
+            } else {
+              console.warn('⚠️ No auth tokens or code found in callback URL');
+            }
           } else if (result.type === 'cancel') {
             console.log('❌ User cancelled authentication');
             throw new Error('Authentication was cancelled');
+          } else if (result.type === 'dismiss') {
+            console.log('❌ Browser was dismissed');
+            throw new Error('Authentication was dismissed');
           }
         }
       }

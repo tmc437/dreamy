@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -58,6 +59,7 @@ export default function WelcomeScreen() {
       await signInWithGoogle();
       console.log('✅ Sign-in process completed');
       // Navigation will happen automatically via the useEffect above
+      // Note: We don't reset isSigningIn here because the component will unmount on navigation
     } catch (error) {
       console.error('❌ Sign in error:', error);
       Alert.alert(
@@ -65,6 +67,8 @@ export default function WelcomeScreen() {
         'Unable to sign in with Google. Please try again.',
         [{ text: 'OK' }]
       );
+    } finally {
+      // Always reset the signing in state to allow retry
       setIsSigningIn(false);
     }
   };

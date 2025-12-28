@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Switch,
-  Platform,
-} from 'react-native';
-import { useRouter } from 'expo-router';
+import LoadingOverlay from '@/components/LoadingOverlay';
+import { useColorScheme } from '@/components/useColorScheme';
+import VoiceRecorder from '@/components/VoiceRecorder';
+import Colors from '@/constants/Colors';
+import { createAndAnalyzeDream } from '@/lib/database';
+import { getErrorMessage, logError } from '@/lib/errorHandler';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { createAndAnalyzeDream } from '@/lib/database';
-import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
-import LoadingOverlay from '@/components/LoadingOverlay';
-import VoiceRecorder from '@/components/VoiceRecorder';
-import { getErrorMessage, logError } from '@/lib/errorHandler';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+    Alert,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
 export default function NewDreamScreen() {
   const router = useRouter();

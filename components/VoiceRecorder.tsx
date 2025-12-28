@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import { supabase } from '@/lib/supabase';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface VoiceRecorderProps {
   onTranscriptionComplete: (text: string) => void;
@@ -70,10 +70,6 @@ export default function VoiceRecorder({ onTranscriptionComplete }: VoiceRecorder
     try {
       setIsTranscribing(true);
 
-      // Read the audio file
-      const response = await fetch(audioUri);
-      const blob = await response.blob();
-
       // Get auth session
       const {
         data: { session },
@@ -83,9 +79,14 @@ export default function VoiceRecorder({ onTranscriptionComplete }: VoiceRecorder
         throw new Error('Not authenticated');
       }
 
-      // Create form data
+      // Create form data with the file URI directly (React Native compatible)
+      // React Native FormData requires this specific object structure
       const formData = new FormData();
-      formData.append('audio', blob as any, 'recording.m4a');
+      formData.append('audio', {
+        uri: audioUri,
+        type: 'audio/m4a',
+        name: 'recording.m4a',
+      } as any);
 
       // Call transcription Edge Function
       const transcriptionResponse = await fetch(
@@ -94,22 +95,27 @@ export default function VoiceRecorder({ onTranscriptionComplete }: VoiceRecorder
           method: 'POST',
           headers: {
             Authorization: `Bearer ${session.access_token}`,
+            // Note: Do NOT set Content-Type header - fetch will set it automatically
+            // with the correct multipart/form-data boundary
           },
           body: formData,
         }
       );
 
       if (!transcriptionResponse.ok) {
-        throw new Error('Transcription failed');
+        const errorData = await transcriptionResponse.json().catch(() => ({}));
+        console.error('Transcription API error:', transcriptionResponse.status, errorData);
+        throw new Error(errorData.error || 'Transcription failed');
       }
 
       const { text } = await transcriptionResponse.json();
       onTranscriptionComplete(text);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Transcription error:', error);
+      const errorMessage = error?.message || 'Unknown error';
       Alert.alert(
         'Transcription Failed',
-        'Unable to transcribe audio. Please type your dream instead.',
+        `Unable to transcribe audio: ${errorMessage}\n\nPlease type your dream instead.`,
         [{ text: 'OK' }]
       );
     } finally {

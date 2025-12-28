@@ -27,6 +27,9 @@
         "key": "production"
       },
       "node": "22.11.0",
+      "env": {
+        "envFile": "./eas-build.env"
+      },
       "ios": {
         "resourceClass": "default",
         "image": "latest"
