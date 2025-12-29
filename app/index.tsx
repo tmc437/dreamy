@@ -1,17 +1,17 @@
-import 'react-native-gesture-handler';
 import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
+import 'react-native-gesture-handler';
 
 export default function WelcomeScreen() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -33,7 +33,7 @@ export default function WelcomeScreen() {
           
           if (hasSeenWelcome === 'true') {
             console.log('➡️ Redirecting to home tabs...');
-            router.replace('/(tabs)');
+            router.replace('/(home)');
           } else {
             console.log('➡️ Redirecting to welcome screen...');
             router.replace('/welcome');

@@ -63,10 +63,10 @@ export default function WelcomeScreen() {
   const handleComplete = async () => {
     try {
       await AsyncStorage.setItem('hasSeenWelcome', 'true');
-      router.replace('/(tabs)');
+      router.replace('/(home)');
     } catch (error) {
       console.error('Error saving welcome status:', error);
-      router.replace('/(tabs)');
+      router.replace('/(home)');
     }
   };
 

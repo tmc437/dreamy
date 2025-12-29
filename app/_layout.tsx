@@ -55,7 +55,7 @@ function RootLayoutNav() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="welcome" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(home)" options={{ headerShown: false }} />
           <Stack.Screen name="dream/new" options={{ presentation: 'modal', title: 'New Dream' }} />
           <Stack.Screen name="dream/[id]" options={{ title: 'Dream Details' }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />

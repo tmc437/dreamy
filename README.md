@@ -25,7 +25,7 @@ A cross-platform mobile and web application for recording and analyzing your dre
 ```
 dreamy/
 ├── app/                      # Expo Router screens
-│   ├── (tabs)/              # Main tab navigation
+│   ├── (home)/              # Main tab navigation
 │   │   ├── index.tsx        # Dreams list
 │   │   └── profile.tsx      # User profile
 │   ├── dream/               # Dream-related screens

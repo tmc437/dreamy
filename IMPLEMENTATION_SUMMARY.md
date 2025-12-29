@@ -58,12 +58,12 @@ npm install @supabase/supabase-js @react-native-async-storage/async-storage expo
 **Files Created:**
 - `contexts/AuthContext.tsx` - Global auth state management
 - `app/index.tsx` - Beautiful welcome/login screen with gradient
-- `app/(tabs)/profile.tsx` - User profile screen
+- `app/(home)/profile.tsx` - User profile screen
 
 **Files Modified:**
 - `app/_layout.tsx` - Wrapped with AuthProvider, added route configuration
-- `app/(tabs)/_layout.tsx` - Added logout button, updated tab icons
-- `app/(tabs)/two.tsx` - Deleted (replaced with profile.tsx)
+- `app/(home)/_layout.tsx` - Added logout button, updated tab icons
+- `app/(home)/two.tsx` - Deleted (replaced with profile.tsx)
 
 **Features Implemented:**
 - Google OAuth sign-in (web + mobile)
@@ -85,7 +85,7 @@ npm install @supabase/supabase-js @react-native-async-storage/async-storage expo
 - `app/dream/[id].tsx` - Dream detail view with dynamic routing
 
 **Files Modified:**
-- `app/(tabs)/index.tsx` - Complete dreams list with FlatList
+- `app/(home)/index.tsx` - Complete dreams list with FlatList
 
 **Features Implemented:**
 - **Dreams List View:**
@@ -208,7 +208,7 @@ npm install @supabase/supabase-js @react-native-async-storage/async-storage expo
 ```
 dreamy/
 ├── app/
-│   ├── (tabs)/
+│   ├── (home)/
 │   │   ├── _layout.tsx          ✅ Tab navigation with logout
 │   │   ├── index.tsx             ✅ Dreams list screen
 │   │   └── profile.tsx           ✅ User profile screen
