@@ -1,32 +1,43 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { fetchDreams } from '@/lib/database';
-import { Dream } from '@/lib/types';
+import DreamCard from '@/components/DreamCard';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import DreamCard from '@/components/DreamCard';
+import { useAuth } from '@/contexts/AuthContext';
+import { fetchDreams } from '@/lib/database';
 import { getErrorMessage, logError } from '@/lib/errorHandler';
+import { Dream } from '@/lib/types';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function DreamsListScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { user } = useAuth();
 
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadDreams = async (isRefreshing = false) => {
+  const loadDreams = useCallback(async (isRefreshing = false) => {
+    // Don't load dreams if user is not authenticated
+    if (!user) {
+      setDreams([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       if (!isRefreshing) {
         setLoading(true);
@@ -42,11 +53,26 @@ export default function DreamsListScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [user]);
 
+  // Clear dreams when user signs out
   useEffect(() => {
-    loadDreams();
-  }, []);
+    if (!user) {
+      console.log('🔒 User signed out, clearing dreams from view');
+      setDreams([]);
+      setError(null);
+      setLoading(false);
+    }
+  }, [user]);
+
+  // Reload dreams when screen comes into focus (e.g., after login or returning from dream detail)
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        loadDreams();
+      }
+    }, [user, loadDreams])
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -119,6 +145,15 @@ export default function DreamsListScreen() {
     </View>
   );
 
+  // Show loading spinner if no user (root layout will redirect to login)
+  if (!user) {
+    return (
+      <View style={styles.authLoadingContainer}>
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
+  }
+
   if (loading && !refreshing) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
@@ -165,6 +200,12 @@ export default function DreamsListScreen() {
 }
 
 const styles = StyleSheet.create({
+  authLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
   },

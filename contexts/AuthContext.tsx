@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
-import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
 import { makeRedirectUri } from 'expo-auth-session';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
+import { supabase } from '../lib/supabase';
 
 // Complete the auth session after redirect (required for web)
 WebBrowser.maybeCompleteAuthSession();
@@ -23,8 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-
-  console.log('🔐 AuthProvider initialized');
 
   useEffect(() => {
     console.log('🔍 Checking for existing session...');
@@ -124,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
     console.log('🚀 Starting Google Sign-In...');
     console.log('  Platform:', Platform.OS);
     
@@ -250,9 +248,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('❌ Sign-in error:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     console.log('🚪 Signing out...');
     try {
       const { error } = await supabase.auth.signOut();
@@ -260,20 +258,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('❌ Sign-out error:', error);
         throw error;
       }
+      // Immediately clear local auth state so UI can redirect without waiting
+      setSession(null);
+      setUser(null);
+      setLoading(false);
       console.log('✅ Successfully signed out');
     } catch (error) {
       console.error('❌ Unexpected sign-out error:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const value = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
     user,
     session,
     loading,
     signInWithGoogle,
     signOut,
-  };
+  }), [user, session, loading, signInWithGoogle, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

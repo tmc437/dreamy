@@ -1,37 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { fetchDreamById, deleteDream, analyzeDream, updateDream } from '@/lib/database';
-import { Dream } from '@/lib/types';
+import LoadingOverlay from '@/components/LoadingOverlay';
+import MoodBadge from '@/components/MoodBadge';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import MoodBadge from '@/components/MoodBadge';
-import LoadingOverlay from '@/components/LoadingOverlay';
-import { getErrorMessage, logError, handleAIError } from '@/lib/errorHandler';
+import { useAuth } from '@/contexts/AuthContext';
+import { analyzeDream, deleteDream, fetchDreamById, updateDream } from '@/lib/database';
+import { getErrorMessage, handleAIError, logError } from '@/lib/errorHandler';
+import { Dream } from '@/lib/types';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function DreamDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { user, loading: authLoading } = useAuth();
 
   const [dream, setDream] = useState<Dream | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Load dream data - only when user is authenticated
   useEffect(() => {
-    loadDream();
-  }, [id]);
+    if (user && id) {
+      loadDream();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, user]);
 
   const loadDream = async () => {
     try {
@@ -110,6 +116,16 @@ export default function DreamDetailScreen() {
       day: 'numeric',
     });
   };
+
+  // Auth is handled at root layout level - show loading if not authenticated
+  // The root layout will redirect unauthenticated users
+  if (authLoading || !user) {
+    return (
+      <View style={styles.authLoadingContainer}>
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
+  }
 
   if (loading) {
     return (
@@ -271,6 +287,12 @@ export default function DreamDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  authLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
   },

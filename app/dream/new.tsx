@@ -2,6 +2,7 @@ import LoadingOverlay from '@/components/LoadingOverlay';
 import { useColorScheme } from '@/components/useColorScheme';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/contexts/AuthContext';
 import { createAndAnalyzeDream } from '@/lib/database';
 import { getErrorMessage, logError } from '@/lib/errorHandler';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,28 +10,41 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Alert,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 export default function NewDreamScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { user, loading } = useAuth();
 
+  // All useState hooks must be declared before any conditional returns
   const [content, setContent] = useState('');
   const [dreamDate, setDreamDate] = useState(new Date());
   const [isLucid, setIsLucid] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
+
+  // Auth is handled at root layout level - show loading if not authenticated
+  // The root layout will redirect unauthenticated users
+  if (loading || !user) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
+  }
 
   const handleSave = async () => {
     if (content.trim().length === 0) {
@@ -270,6 +284,12 @@ export default function NewDreamScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
   },

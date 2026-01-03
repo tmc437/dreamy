@@ -2,35 +2,42 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import 'react-native-gesture-handler';
 
-export default function WelcomeScreen() {
+export default function LoginScreen() {
   const { user, loading, signInWithGoogle } = useAuth();
   const router = useRouter();
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isCheckingWelcome, setIsCheckingWelcome] = useState(false);
+  const hasNavigated = useRef(false);
 
-  // Redirect after authentication
+  // Check welcome status when user becomes authenticated
   useEffect(() => {
     const checkWelcomeStatus = async () => {
-      console.log('📱 Login Screen State:');
-      console.log('  Loading:', loading);
-      console.log('  User:', user ? `Authenticated (${user.email})` : 'Not authenticated');
+      // Prevent multiple navigations
+      if (hasNavigated.current || loading || !user) {
+        return;
+      }
+
+      setIsCheckingWelcome(true);
+      console.log('✅ User authenticated, checking welcome status...');
       
-      if (!loading && user) {
-        console.log('✅ User authenticated, checking welcome status...');
-        try {
-          const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
-          console.log('  Has seen welcome:', hasSeenWelcome);
-          
+      try {
+        const hasSeenWelcome = await AsyncStorage.getItem('hasSeenWelcome');
+        
+        hasNavigated.current = true;
+        
+        // Use setTimeout to ensure navigation happens outside render cycle
+        setTimeout(() => {
           if (hasSeenWelcome === 'true') {
             console.log('➡️ Redirecting to home tabs...');
             router.replace('/(home)');
@@ -38,17 +45,21 @@ export default function WelcomeScreen() {
             console.log('➡️ Redirecting to welcome screen...');
             router.replace('/welcome');
           }
-        } catch (error) {
-          console.error('❌ Error checking welcome status:', error);
-          console.log('➡️ Defaulting to welcome screen...');
-          router.replace('/welcome');
-        }
-      } else if (!loading && !user) {
-        console.log('ℹ️ No user, staying on login screen');
+        }, 0);
+      } catch (error) {
+        console.error('❌ Error checking welcome status:', error);
+        hasNavigated.current = true;
+        setTimeout(() => router.replace('/welcome'), 0);
       }
     };
 
     checkWelcomeStatus();
+    
+    // Reset navigation flag when user logs out
+    if (!user) {
+      hasNavigated.current = false;
+      setIsCheckingWelcome(false);
+    }
   }, [user, loading, router]);
 
   const handleGoogleSignIn = async () => {
@@ -73,8 +84,8 @@ export default function WelcomeScreen() {
     }
   };
 
-  // Show loading spinner while checking auth state
-  if (loading) {
+  // Show loading spinner while checking auth state or welcome status
+  if (loading || (user && isCheckingWelcome)) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#8B5CF6" />
@@ -82,9 +93,13 @@ export default function WelcomeScreen() {
     );
   }
 
-  // Don't show welcome screen if user is authenticated
+  // If user is authenticated, show loading (navigation will happen via useEffect)
   if (user) {
-    return null;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
   }
 
   return (
