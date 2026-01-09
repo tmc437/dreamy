@@ -60,7 +60,7 @@ function RootLayoutNav() {
   // Track if we've already initiated a redirect to prevent loops
   const hasInitiatedRedirect = useRef(false);
 
-  useEffect(() => {
+    useEffect(() => {
     // Reset redirect flag when user logs in
     if (user) {
       hasInitiatedRedirect.current = false;
