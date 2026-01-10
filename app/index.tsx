@@ -111,7 +111,7 @@ export default function LoginScreen() {
         </View>
 
         {/* App Name */}
-        <Text style={styles.appName}>Dreamy</Text>
+        <Text style={styles.appName}>Dreamzzz</Text>
 
         {/* Tagline */}
         <Text style={styles.tagline}>Understand your dreams with AI</Text>

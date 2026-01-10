@@ -150,7 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('📱 Using mobile OAuth flow');
         
         const redirectUrl = makeRedirectUri({
-          scheme: 'dreamy',
+          scheme: 'dreamzzz',
           path: 'auth/callback',
         });
 

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Dreamy",
-    "slug": "dreamy",
+    "name": "Dreamzzz",
+    "slug": "dreamzzz",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "dreamy",
+    "scheme": "dreamzzz",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -20,17 +20,17 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.tmccann-dreamy.app",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Dreamy needs access to your microphone to record voice descriptions of your dreams.",
-        "NSCameraUsageDescription": "Dreamy needs camera access to take photos for your dream journal.",
+        "NSMicrophoneUsageDescription": "Dreamzzz needs access to your microphone to record voice descriptions of your dreams.",
+        "NSCameraUsageDescription": "Dreamzzz needs camera access to take photos for your dream journal.",
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
-              "dreamy"
+              "dreamzzz"
             ]
           },
           {
             "CFBundleURLSchemes": [
-              "dreamy"
+              "dreamzzz"
             ]
           }
         ],

@@ -104,10 +104,10 @@ export default function ProfileScreen() {
       {/* Info Section */}
       <View style={styles.infoSection}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          About Dreamy
+          About Dreamzzz
         </Text>
         <Text style={[styles.infoText, { color: colors.text, opacity: 0.7 }]}>
-          Dreamy helps you record and understand your dreams using AI-powered
+          Dreamzzz helps you record and understand your dreams using AI-powered
           insights. Track your dream patterns, emotions, and discover the meaning
           behind your subconscious thoughts.
         </Text>
